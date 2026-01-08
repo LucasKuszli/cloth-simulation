@@ -1,0 +1,20 @@
+[project]
+name = "scs-project-mass-spring-cloth"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cython>=3.2.4",
+    "imageio>=2.37.2",
+    "matplotlib>=3.10.8",
+    "mypy>=1.19.1",
+    "numpy>=2.4.0",
+    "pip>=25.3",
+    "ruff>=0.14.10",
+    "scipy>=1.16.3",
+    "setuptools>=80.9.0",
+    "sympy>=1.14.0",
+    "tqdm>=4.67.1",
+    "wheel>=0.45.1",
+]
