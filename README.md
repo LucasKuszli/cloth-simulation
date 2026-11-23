@@ -1,63 +1,33 @@
 # Cloth Simulation
 
-A small cloth (flag) simulation project with a simple wind model, Euler and RK4 time
-integrators, experiment sweeps, and optional Blender-based rendering.
+A mass-spring cloth simulation of a flag in the wind, written from scratch in NumPy and rendered in Blender. The project compares explicit Euler and fourth-order Runge-Kutta (RK4) integration and maps where each one stays stable as the timestep and spring stiffness change.
 
-## Repository layout
+<p align="center">
+  <img src="media/flag_rk4.gif" width="600" alt="Flag simulated with RK4 and rendered in Blender">
+</p>
 
-- `src/cloth_simulation/`
-  - `main.py`  
-    Runs a single simulation scenario and writes results to `.npz` in `data/`.
-  - `system.py`  
-    Cloth state, spring forces, gravity, wind forces, and acceleration evaluation.
-  - `integrators.py`  
-    `EulerIntegrator` and `RK4Integrator` with a common `step(...)` interface.
-  - `utils.py`  
-    Geometry generation (grid, springs, triangles) and metrics helpers.
-  - `wind.py`  
-    Spatially-uniform laminar wind model.
-  - `recorder.py`  
-    Records states and metrics during simulation and saves them to `.npz`.
+## How it works
 
-- `src/cloth_simulation/experiment_driver.py`  
-  Runs a parameter sweep over integrators, timesteps, and stiffness scales (optionally
-  in parallel).
+- **Cloth model.** A grid of point masses (20 × 15 by default) connected by structural, shear and bending springs, with gravity and a laminar wind force. The two corners on the pole side are fixed, like a flag on a pole.
+- **Integrators.** Explicit Euler and RK4 behind a common `step()` interface, so every scenario can be run with either.
+- **Experiments.** A parameter sweep over integrator, timestep (10⁻⁴ to 5 × 10⁻² s) and stiffness scale (0.5, 1, 2), run in parallel. Each run records energy, spring stretch and runtime.
+- **Rendering.** Simulation states are exported to `.npz` and replayed in Blender, which builds the cloth mesh and renders the sequence to frames and a GIF.
 
-- `src/visualization/blender/`
-  - `run.py`  
-    Launches Blender in background mode to render a sequence and optionally build a GIF.
-  - `blender_bridge.py`  
-    Blender-side entrypoint that loads `.npz`, builds a mesh, and renders frames.
+## Results
 
-- `visualization/blender/`
-  - `build_lattice.py`  
-    Blender utilities for scene setup, cloth mesh creation, and camera/light placement.
-  - `render.py`  
-    Renders a sequence by updating mesh vertices per frame.
+<p align="center">
+  <img src="src/img/stability_map.png" width="820" alt="Stability map for Euler and RK4 over timestep and stiffness">
+</p>
 
-- `data/`  
-  Output directory for simulation `.npz` files (created automatically).
+- **Stability.** Euler stays stable up to a timestep of 10⁻³ s at every stiffness tested. RK4 stays stable up to 2.5 × 10⁻³ s, and up to 5 × 10⁻³ s for the softest cloth. That is a 2.5× to 5× larger timestep.
+- **Accuracy.** Where both integrators are stable, RK4 does not reduce energy drift. The ratio of RK4 to Euler drift stays between about 0.99 and 1.10. RK4's benefit here is the larger stable timestep, which has to be weighed against its four force evaluations per step.
 
-- `img/`  
-  Output directory for plots (created automatically by the metrics script, if used).
+<p align="center">
+  <img src="src/img/fig2_energy_drift_vs_dt.png" width="480" alt="Energy drift ratio of RK4 to Euler versus timestep">
+</p>
 
-- `renders/`  
-  Output directory for Blender renders (created automatically by the Blender runner).
+## Get started
 
-## Requirements
+Installation, running scenarios, the parameter sweep and Blender rendering are described in [SETUP.md](SETUP.md).
 
-- Python 3.10+ recommended
-- Core Python packages:
-  - `numpy`
-- Plotting (optional):
-  - `matplotlib`
-- Blender rendering (optional):
-  - Blender installed and available on your PATH, or provide `--blender-path`
-  - `bpy` is provided by Blender when running scripts from Blender
-- GIF creation (optional):
-  - `imageio`
-
-Install project dependencies:
-```bash
-uv sync
-```
+Built with Python, NumPy, Matplotlib and Blender.

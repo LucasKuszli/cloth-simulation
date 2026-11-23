@@ -1,0 +1,4 @@
+
+# Rendered frames are generated locally, not stored in git
+src/renders/
+renders/
